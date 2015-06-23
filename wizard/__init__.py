@@ -21,21 +21,4 @@
 #
 ##############################################################################
 
-{
-    'name': 'Current Account Reports',
-    'version': '1.0',
-    'depends': [
-        "base",
-        "account",
-    ],
-    'author': 'Latinux S.A.',
-    'category': 'Account Modules',
-    'description': """Create Current Account Report in CSV format""",
-    'init_xml': [],
-    'update_xml': [
-        'wizard/current_account_report_view.xml'
-    ],
-    'demo_xml': [],
-    'installable': True,
-    'active': True,
-}
+import current_account_report

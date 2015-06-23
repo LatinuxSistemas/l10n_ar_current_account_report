@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+    <!--  =========== VIEWS =========== -->   
+
+    <record model="ir.ui.view" id="view_report_cc_wizard">
+        <field name="name">CC</field>
+        <field name="model">wizard.current.account.report</field>
+        <field name="arch" type="xml">
+            <form col="10" string="Current Account Report">
+                <group states="choose">                       
+                    <group colspan="2" string="Select Partner">
+                        <field invisible="1" name="state"/>
+                        <field name="partner_id" string="Partner" widget="selection"/>
+                    </group>
+                    <group colspan="2">
+                        <button special="cancel" icon="gtk-cancel" string="Cancel"/>
+                        <button type="object" name="create_report" icon="gtk-go-forward" 
+                            string="Create"/>
+                    </group>
+                </group>
+                <group col="2" states="done">                        
+                    <field name="data" colspan="1" rowspan="1"/>
+                    <button special="cancel" icon="gtk-ok" string="Close" states="done"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!--<record model="ir.ui.view" id="view_report_cc_wizard_1">
+        <field name="name">CC Prov</field>
+        <field name="model">report_cc</field>
+        <field name="type">form</field>            
+        <field name="arch" type="xml">
+            <form col="10" string="Reporte Cuenta Corriente" >
+                <group col="3" fill="0" height="100" width="400" states="choose">                        
+                    <field name="partner_id" string="Proveedor" widget="selection" domain="[('supplier','=', True)]"/>
+                    <group colspan="2">
+                        <button special="cancel" icon="gtk-cancel" string="Cancelar"/>
+                        <button type="object" name="create_report_cc_proveedor" icon="gtk-go-forward" string="Crear"/>
+                    </group>
+                    <field invisible="1" name="state"/>
+                </group>
+                <group col="2" states="fin" >                        
+        <field name="data" colspan="1" rowspan="3"/>
+        <field name="name" colspan="1" rowspan="3"/>
+                    <button special="cancel" icon="gtk-ok" string="Cerrar Asistente" states="fin"/>
+                </group>
+            </form>
+        </field>
+    </record> -->
+
+    <!--  =========== ACTIONS =========== -->
+
+    <record model="ir.actions.act_window" id="action_report">
+        <field name="name">CC</field>
+        <field name="res_model">wizard.current.account.report</field>
+        <field name="view_type">form</field>   
+        <field name="view_id" ref="view_report_cc_wizard"/>        
+        <field name="target">new</field>
+        <field name="context">{"sense": "out"}</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_report1">
+        <field name="name">CC Prov</field>
+        <field name="res_model">wizard.current.account.report</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="view_report_cc_wizard"/>
+        <field name="target">new</field>
+        <field name="context">{"sense": "in"}</field>
+    </record>
+
+    <!--  =========== MENU ITEMS =========== -->
+
+    <menuitem
+        id="menu_current_account_customer_report"
+        name="Reporte Cuenta Corriente Clientes"
+        action="action_report"
+        parent="account.final_accounting_reports"
+        sequence="1000" 
+        icon="STOCK_PRINT"
+        />
+
+    <menuitem
+        id="menu_current_account_supplier_report"
+        name="Reporte Cuenta Corriente Proveedores"
+        action="action_report1"
+        parent="account.final_accounting_reports"
+        sequence="800" 
+        icon="STOCK_PRINT"
+        />
+
+    </data>
+</openerp>
