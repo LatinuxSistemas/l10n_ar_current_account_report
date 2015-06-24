@@ -20,8 +20,10 @@
                             string="Create"/>
                     </group>
                 </group>
-                <group col="2" states="done">                        
-                    <field name="data" colspan="1" rowspan="1"/>
+                <group col="4" states="done">                        
+                    <field name="filename" colspan="2" readonly="1"/>
+                    <newline/>
+                    <field name="data" colspan="2" filename="filename" nolabel="1"/>
                     <button special="cancel" icon="gtk-ok" string="Close" states="done"/>
                 </group>
             </form>
