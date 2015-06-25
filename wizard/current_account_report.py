@@ -5,7 +5,7 @@ import codecs
 import tempfile
 import time
 
-from openerp.osv import fields, orm
+from openerp.osv import fields, orm, osv
 from openerp.tools.translate import _
 
 
@@ -26,6 +26,8 @@ class current_account_report(orm.TransientModel):
 
     def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None,
                         toolbar=False):
+        if view_id and isinstance(view_id, list):
+            view_id = view_id[0]
         res = super(current_account_report, self).fields_view_get(cr, uid, view_id, view_type,
                                                                   context, toolbar)
         sense = context.get("sense", False)
@@ -56,6 +58,12 @@ class current_account_report(orm.TransientModel):
             ('partner_id', '=', wizard.partner_id.id),
             ('type', 'like', "%s%%" % sense),
         ], order="date_invoice", context=context)
+        invoices = invoice_obj.browse(cr, uid, inv_ids)
+        if len(invoices) == 0:
+            raise osv.except_osv(_("AccountWarning"),
+                                 _("Partner hasn't any invoice or voucher related!"))
+
+        state_selection = invoice_obj.fields_get(cr, uid, "state")["state"]["selection"]
 
         line_tmp = u'{};{};{};{};{};{};{}\n'
         row_header = (_("Invoice Date"), _("Invoice Number"), _("Description"),
@@ -67,7 +75,6 @@ class current_account_report(orm.TransientModel):
             header = _("Current Account Report for %s") % wizard.partner_id.name,
             today = time.strftime(_("%b %d, %Y")),
             csvfile.write("%s;%s\n\n" % (header[0], today[0]))
-            invoices = invoice_obj.browse(cr, uid, inv_ids)
             for invoice in invoices:
                 number = "%s %s" % (invoice.denomination_id.name or '', invoice.internal_number)
                 date = ''
@@ -75,18 +82,10 @@ class current_account_report(orm.TransientModel):
                     date = time.strftime("%d/%m/%Y", time.strptime(invoice.date_invoice,
                                                                    '%Y-%m-%d'))
 
-                if invoice['state'] == 'draft':
-                    state = 'Borrador'
-                elif invoice['state'] == 'paid':
-                    state = 'Pagada'
-                elif invoice['state'] == 'open':
-                    state = 'Abierta'
-                elif invoice['state'] in ('proforma', 'proforma2'):
-                    state = 'Proforma'
-                elif invoice['state'] == 'cancel':
-                    state = 'Cancelada'
-                else:
-                    state = ''
+                for internal, presentation in state_selection:
+                    if internal == invoice.state:
+                        state = _(presentation)
+                        break
 
                 ##### LINEA DE REPORTE #####
                 total = str(invoice.amount_total)
